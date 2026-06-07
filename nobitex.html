@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="نوبیتکس">
+<meta name="theme-color" content="#0a0f1e">
+<title>نوبیتکس — قیمت لحظه‌ای</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #090d1a;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: rgba(255,255,255,0.07);
+    --text: #f0f4ff;
+    --muted: #6b7a99;
+    --accent: #3d8bff;
+    --green: #00d084;
+    --red: #ff4d6a;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { font-family: 'Vazirmatn', sans-serif; background: var(--bg); color: var(--text); min-height: 100dvh; }
+  .header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(9,13,26,0.9);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: env(safe-area-inset-top, 44px) 16px 0;
+  }
+  .header-inner { display: flex; align-items: center; justify-content: space-between; padding-bottom: 14px; }
+  .logo { font-size: 20px; font-weight: 800; background: linear-gradient(135deg, #3d8bff, #00d084); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .refresh-btn {
+    width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border);
+    background: var(--surface); color: var(--muted); display: flex; align-items: center;
+    justify-content: center; cursor: pointer; transition: all 0.2s; font-size: 16px;
+  }
+  .refresh-btn:active { transform: scale(0.9); }
+  .refresh-btn.spinning svg { animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .tabs { display: flex; gap: 8px; padding: 0 0 14px; }
+  .tab {
+    flex: 1; padding: 9px; border-radius: 12px; border: 1px solid var(--border);
+    background: transparent; color: var(--muted); font-family: 'Vazirmatn', sans-serif;
+    font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+  }
+  .tab.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .search-wrap { padding: 12px 16px; position: relative; }
+  .search-input {
+    width: 100%; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 11px 16px 11px 40px; color: var(--text);
+    font-family: 'Vazirmatn', sans-serif; font-size: 14px; outline: none;
+    direction: rtl; transition: border-color 0.2s;
+  }
+  .search-input:focus { border-color: var(--accent); }
+  .search-input::placeholder { color: var(--muted); }
+  .search-icon { position: absolute; left: 28px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 16px; pointer-events: none; }
+  .status-bar { display: flex; align-items: center; justify-content: space-between; padding: 0 16px 10px; font-size: 11px; color: var(--muted); }
+  .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); display: inline-block; margin-left: 5px; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+  .list { padding: 0 16px 100px; display: flex; flex-direction: column; gap: 10px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 16px; animation: fadeIn 0.3s ease forwards; opacity: 0; }
+  @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } from { opacity: 0; transform: translateY(10px); } }
+  .card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .coin-info { display: flex; align-items: center; gap: 10px; }
+  .coin-icon { width: 40px; height: 40px; border-radius: 50%; background: var(--surface2); display: flex; align-items: center; justify-content: center; font-size: 20px; border: 1px solid var(--border); }
+  .coin-name { font-size: 15px; font-weight: 700; }
+  .coin-pair { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .coin-latest { text-align: left; }
+  .latest-label { font-size: 10px; color: var(--muted); margin-bottom: 3px; text-align: left; }
+  .latest-price { font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .prices-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .price-box { border-radius: 12px; padding: 10px 12px; }
+  .price-box.buy { background: rgba(0,208,132,0.08); border: 1px solid rgba(0,208,132,0.15); }
+  .price-box.sell { background: rgba(255,77,106,0.08); border: 1px solid rgba(255,77,106,0.15); }
+  .price-box-label { font-size: 10px; font-weight: 600; margin-bottom: 5px; }
+  .price-box.buy .price-box-label { color: var(--green); }
+  .price-box.sell .price-box-label { color: var(--red); }
+  .price-box-value { font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .loading { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 20px; gap: 16px; color: var(--muted); font-size: 14px; }
+  .spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+  .error-box { margin: 20px 16px; background: rgba(255,77,106,0.1); border: 1px solid rgba(255,77,106,0.2); border-radius: 14px; padding: 16px; text-align: center; font-size: 13px; color: var(--red); line-height: 1.8; }
+  .retry-btn { margin-top: 12px; padding: 8px 20px; background: var(--accent); border: none; border-radius: 10px; color: #fff; font-family: 'Vazirmatn', sans-serif; font-size: 13px; cursor: pointer; }
+  .empty { text-align: center; padding: 60px 20px; color: var(--muted); font-size: 14px; }
+  .install-banner {
+    position: fixed; bottom: env(safe-area-inset-bottom, 20px); left: 16px; right: 16px;
+    background: var(--surface2); border: 1px solid var(--border); border-radius: 18px;
+    padding: 14px 16px; display: flex; align-items: center; gap: 12px; font-size: 12px;
+    z-index: 200; box-shadow: 0 8px 32px rgba(0,0,0,0.5); animation: slideUp 0.4s ease;
+  }
+  @keyframes slideUp { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .install-banner .icon { font-size: 28px; flex-shrink: 0; }
+  .install-banner .text { flex: 1; color: var(--muted); line-height: 1.5; }
+  .install-banner .text strong { color: var(--text); display: block; margin-bottom: 2px; }
+  .install-banner .close { background: none; border: none; color: var(--muted); font-size: 18px; cursor: pointer; padding: 4px; flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="logo">📈 نوبیتکس</div>
+    <button class="refresh-btn" id="refreshBtn" onclick="loadData()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+        <path d="M3 3v5h5"/>
+      </svg>
+    </button>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchMarket('toman', this)">بازار تومان</button>
+    <button class="tab" onclick="switchMarket('usdt', this)">بازار تتر</button>
+  </div>
+</div>
+
+<div class="search-wrap">
+  <span class="search-icon">🔍</span>
+  <input class="search-input" type="search" placeholder="جستجوی ارز..." id="searchInput" oninput="filterCoins()" />
+</div>
+
+<div class="status-bar">
+  <span id="statusText">در حال دریافت...</span>
+  <span id="updateTime"></span>
+</div>
+
+<div id="content"><div class="loading"><div class="spinner"></div><span>در حال دریافت قیمت‌ها...</span></div></div>
+
+<div class="install-banner" id="installBanner">
+  <span class="icon">📱</span>
+  <div class="text">
+    <strong>نصب روی آیفون</strong>
+    دکمه Share رو بزن، بعد «Add to Home Screen» انتخاب کن
+  </div>
+  <button class="close" onclick="document.getElementById('installBanner').remove()">✕</button>
+</div>
+
+<script>
+const COINS = {
+  btc:  { name: 'بیت‌کوین',     emoji: '₿' },
+  eth:  { name: 'اتریوم',       emoji: 'Ξ' },
+  usdt: { name: 'تتر',          emoji: '💵' },
+  bnb:  { name: 'بایننس کوین',  emoji: '🟡' },
+  sol:  { name: 'سولانا',       emoji: '◎' },
+  xrp:  { name: 'ریپل',         emoji: '💧' },
+  doge: { name: 'دوج‌کوین',     emoji: '🐶' },
+  trx:  { name: 'ترون',         emoji: '🔴' },
+  ada:  { name: 'کاردانو',      emoji: '🔵' },
+  ton:  { name: 'تون‌کوین',     emoji: '💎' },
+  ltc:  { name: 'لایت‌کوین',    emoji: '🥈' },
+  bch:  { name: 'بیت‌کوین کش',  emoji: '💚' },
+  link: { name: 'چین‌لینک',     emoji: '🔗' },
+  dot:  { name: 'پولکادات',     emoji: '🟣' },
+  avax: { name: 'آوالانچ',      emoji: '🔺' },
+  shib: { name: 'شیبا',         emoji: '🐕' },
+};
+
+// چند پروکسی که امتحان می‌کنیم
+const PROXIES = [
+  url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+  url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+  url => `https://thingproxy.freeboard.io/fetch/${url}`,
+];
+
+let currentMarket = 'toman';
+let allData = [];
+let isLoading = false;
+let proxyIndex = 0;
+
+function switchMarket(market, el) {
+  currentMarket = market;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('searchInput').value = '';
+  loadData();
+}
+
+async function fetchWithProxy(proxyIdx) {
+  const symbols = Object.keys(COINS).filter(s => !(currentMarket === 'usdt' && s === 'usdt'));
+  const dst = currentMarket === 'toman' ? 'rls' : 'usdt';
+  const targetUrl = 'https://api.nobitex.ir/market/stats';
+
+  const body = JSON.stringify({ srcCurrency: symbols.join(','), dstCurrency: dst });
+
+  if (proxyIdx === 0) {
+    // corsproxy.io — supports POST
+    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`;
+    const res = await fetch(proxyUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-requested-with': 'XMLHttpRequest' },
+      body
+    });
+    if (!res.ok) throw new Error('proxy0 failed');
+    return await res.json();
+  }
+
+  if (proxyIdx === 1) {
+    // allorigins — GET فقط، پس URL رو با پارامتر می‌سازیم
+    // نوبیتکس GET هم داره برای stats
+    const getUrl = `https://api.nobitex.ir/market/stats?srcCurrency=${symbols.join(',')}&dstCurrency=${dst}`;
+    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(getUrl)}`;
+    const res = await fetch(proxyUrl);
+    if (!res.ok) throw new Error('proxy1 failed');
+    return await res.json();
+  }
+
+  if (proxyIdx === 2) {
+    const getUrl = `https://api.nobitex.ir/market/stats?srcCurrency=${symbols.join(',')}&dstCurrency=${dst}`;
+    const proxyUrl = `https://thingproxy.freeboard.io/fetch/${getUrl}`;
+    const res = await fetch(proxyUrl);
+    if (!res.ok) throw new Error('proxy2 failed');
+    return await res.json();
+  }
+
+  throw new Error('همه پروکسی‌ها خطا دادن');
+}
+
+async function loadData() {
+  if (isLoading) return;
+  isLoading = true;
+
+  const btn = document.getElementById('refreshBtn');
+  btn.classList.add('spinning');
+  document.getElementById('statusText').innerHTML = '<span class="status-dot"></span> در حال دریافت...';
+
+  const symbols = Object.keys(COINS).filter(s => !(currentMarket === 'usdt' && s === 'usdt'));
+  const dst = currentMarket === 'toman' ? 'rls' : 'usdt';
+
+  let json = null;
+  let lastError = '';
+
+  // همه پروکسی‌ها رو امتحان می‌کنیم
+  for (let i = 0; i < 3; i++) {
+    try {
+      json = await fetchWithProxy(i);
+      if (json && json.status === 'ok') { proxyIndex = i; break; }
+    } catch(e) { lastError = e.message; }
+  }
+
+  if (!json || json.status !== 'ok') {
+    document.getElementById('content').innerHTML = `
+      <div class="error-box">
+        ❌ خطا در دریافت قیمت‌ها<br>
+        <small>ممکنه فیلترشکن روشن یا خاموش کردن مشکل رو حل کنه</small>
+        <br><button class="retry-btn" onclick="loadData()">دوباره تلاش</button>
+      </div>`;
+    document.getElementById('statusText').textContent = 'خطا در اتصال';
+    isLoading = false;
+    btn.classList.remove('spinning');
+    return;
+  }
+
+  allData = symbols.map(sym => {
+    const key = `${sym}-${dst}`;
+    const stat = json.stats?.[key];
+    return {
+      symbol: sym,
+      name: COINS[sym]?.name || sym.toUpperCase(),
+      emoji: COINS[sym]?.emoji || '🪙',
+      bestBuy: stat?.bestBuy || null,
+      bestSell: stat?.bestSell || null,
+      latest: stat?.latest || null,
+    };
+  }).filter(c => c.latest);
+
+  renderList(allData);
+
+  const now = new Date();
+  const t = now.toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  document.getElementById('updateTime').textContent = t;
+  document.getElementById('statusText').innerHTML = '<span class="status-dot"></span> آپدیت شد';
+
+  isLoading = false;
+  btn.classList.remove('spinning');
+}
+
+function filterCoins() {
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  if (!q) { renderList(allData); return; }
+  const filtered = allData.filter(c => c.symbol.includes(q) || c.name.includes(q));
+  renderList(filtered);
+}
+
+function formatPrice(val, market) {
+  if (!val) return '—';
+  let num = parseFloat(val);
+  if (isNaN(num)) return '—';
+  if (market === 'toman') num = num / 10;
+  const suffix = market === 'toman' ? ' ت' : ' $';
+  if (num >= 1_000_000_000) return (num / 1_000_000_000).toLocaleString('fa-IR', { maximumFractionDigits: 2 }) + ' میلیارد' + suffix;
+  if (num >= 1_000_000) return (num / 1_000_000).toLocaleString('fa-IR', { maximumFractionDigits: 2 }) + ' میلیون' + suffix;
+  if (num >= 1) return num.toLocaleString('fa-IR', { maximumFractionDigits: 2 }) + suffix;
+  return num.toLocaleString('fa-IR', { maximumSignificantDigits: 4 }) + suffix;
+}
+
+function renderList(data) {
+  const content = document.getElementById('content');
+  if (!data.length) { content.innerHTML = '<div class="empty">موردی یافت نشد</div>'; return; }
+  content.innerHTML = `<div class="list">${data.map((c, i) => `
+    <div class="card" style="animation-delay:${i * 0.04}s">
+      <div class="card-top">
+        <div class="coin-info">
+          <div class="coin-icon">${c.emoji}</div>
+          <div>
+            <div class="coin-name">${c.name}</div>
+            <div class="coin-pair">${c.symbol.toUpperCase()}/${currentMarket === 'toman' ? 'IRT' : 'USDT'}</div>
+          </div>
+        </div>
+        <div class="coin-latest">
+          <div class="latest-label">آخرین قیمت</div>
+          <div class="latest-price">${formatPrice(c.latest, currentMarket)}</div>
+        </div>
+      </div>
+      <div class="prices-row">
+        <div class="price-box buy">
+          <div class="price-box-label">بهترین خرید</div>
+          <div class="price-box-value">${formatPrice(c.bestBuy, currentMarket)}</div>
+        </div>
+        <div class="price-box sell">
+          <div class="price-box-label">بهترین فروش</div>
+          <div class="price-box-value">${formatPrice(c.bestSell, currentMarket)}</div>
+        </div>
+      </div>
+    </div>
+  `).join('')}</div>`;
+}
+
+setInterval(loadData, 30000);
+loadData();
+setTimeout(() => { const b = document.getElementById('installBanner'); if (b) b.remove(); }, 10000);
+</script>
+</body>
+</html>
