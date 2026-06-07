@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="مارکت">
+<meta name="theme-color" content="#060a12">
+<title>Market Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#060a12; --bg2:#0c1220; --surface:#111827; --surface2:#1a2438;
+  --border:rgba(255,255,255,0.06); --border2:rgba(255,255,255,0.12);
+  --text:#e8eeff; --muted:#546080; --muted2:#7a8aaa;
+  --green:#00e676; --green-dim:rgba(0,230,118,0.1); --green-border:rgba(0,230,118,0.2);
+  --red:#ff3d5a; --red-dim:rgba(255,61,90,0.1); --red-border:rgba(255,61,90,0.2);
+  --blue:#4d9fff; --gold:#ffc947; --accent:#4d9fff;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{font-family:'Vazirmatn',sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;}
+.header{position:sticky;top:0;z-index:200;background:rgba(6,10,18,0.92);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--border);padding:env(safe-area-inset-top,44px) 16px 0;}
+.header-top{display:flex;align-items:center;justify-content:space-between;padding-bottom:12px;}
+.logo{display:flex;align-items:center;gap:8px;font-size:18px;font-weight:900;}
+.logo-icon{width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,#4d9fff,#00e676);display:flex;align-items:center;justify-content:center;font-size:16px;}
+.logo-text{background:linear-gradient(90deg,#4d9fff,#00e676);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.icon-btn{width:34px;height:34px;border-radius:10px;border:1px solid var(--border2);background:var(--surface);color:var(--muted2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;transition:all 0.2s;}
+.icon-btn:active{transform:scale(0.9);}
+.spinning{animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.tabs{display:flex;gap:4px;padding-bottom:12px;overflow-x:auto;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{flex-shrink:0;padding:7px 16px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted2);font-family:'Vazirmatn',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.2s;}
+.tab.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+.search-bar{padding:8px 16px 14px;}
+.search-inner{position:relative;}
+.search-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:10px 16px 10px 38px;color:var(--text);font-family:'Vazirmatn',sans-serif;font-size:13px;outline:none;transition:border-color 0.2s;}
+.search-input:focus{border-color:var(--accent);}
+.search-input::placeholder{color:var(--muted);}
+.search-ico{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;pointer-events:none;}
+.status{display:flex;align-items:center;justify-content:space-between;padding:0 16px 8px;font-size:11px;color:var(--muted);}
+.live-dot{width:5px;height:5px;border-radius:50%;background:var(--green);display:inline-block;margin-left:5px;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 16px 12px;}
+.sum-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:12px 10px;display:flex;flex-direction:column;gap:4px;}
+.sum-label{font-size:10px;color:var(--muted);}
+.sum-val{font-size:13px;font-weight:700;font-family:'JetBrains Mono',monospace;}
+.up{color:var(--green);} .down{color:var(--red);} .neu{color:var(--muted2);}
+.list{padding:0 16px 120px;display:flex;flex-direction:column;gap:8px;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:14px;display:flex;align-items:center;gap:12px;animation:fadeUp 0.3s ease forwards;opacity:0;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.coin-logo{width:44px;height:44px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;position:relative;}
+.rank-badge{position:absolute;bottom:-2px;right:-2px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;font-size:8px;color:var(--muted);padding:0 3px;font-family:'JetBrains Mono',monospace;}
+.coin-main{flex:1;min-width:0;}
+.coin-row1{display:flex;align-items:center;gap:6px;margin-bottom:3px;}
+.coin-sym{font-size:15px;font-weight:800;letter-spacing:-0.3px;}
+.coin-name{font-size:11px;color:var(--muted);}
+.coin-vol{font-size:10px;color:var(--muted);margin-top:2px;}
+.coin-right{text-align:left;flex-shrink:0;}
+.coin-price{font-size:15px;font-weight:700;font-family:'JetBrains Mono',monospace;margin-bottom:5px;}
+.change-pill{display:inline-block;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace;}
+.change-pill.up{background:var(--green-dim);border:1px solid var(--green-border);color:var(--green);}
+.change-pill.down{background:var(--red-dim);border:1px solid var(--red-border);color:var(--red);}
+.change-pill.neu{background:var(--surface2);color:var(--muted2);}
+.type-badge{font-size:9px;font-weight:700;padding:2px 5px;border-radius:5px;letter-spacing:0.5px;flex-shrink:0;}
+.type-badge.crypto{background:rgba(77,159,255,0.15);color:var(--blue);}
+.type-badge.stock{background:rgba(255,201,71,0.15);color:var(--gold);}
+.type-badge.index{background:rgba(200,150,255,0.15);color:#c896ff;}
+.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 20px;gap:16px;color:var(--muted);}
+.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;}
+.err-box{margin:16px;background:var(--red-dim);border:1px solid var(--red-border);border-radius:14px;padding:16px;text-align:center;color:var(--red);font-size:13px;line-height:1.8;}
+.retry{margin-top:10px;padding:8px 20px;background:var(--accent);border:none;border-radius:10px;color:#fff;font-family:'Vazirmatn',sans-serif;font-size:13px;cursor:pointer;}
+.empty{text-align:center;padding:60px 20px;color:var(--muted);}
+.section-head{padding:4px 0 8px;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:1px;}
+.err-inline{font-size:10px;color:var(--red);padding:4px 0 8px;}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-top">
+    <div class="logo">
+      <div class="logo-icon">📊</div>
+      <span class="logo-text">Market Pro</span>
+    </div>
+    <div class="icon-btn" id="refreshBtn" onclick="loadAll()">🔄</div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="setTab('all',this)">همه</button>
+    <button class="tab" onclick="setTab('crypto',this)">کریپتو</button>
+    <button class="tab" onclick="setTab('stock',this)">سهام</button>
+    <button class="tab" onclick="setTab('index',this)">شاخص‌ها</button>
+  </div>
+  <div class="search-bar">
+    <div class="search-inner">
+      <span class="search-ico">🔍</span>
+      <input class="search-input" type="search" placeholder="جستجو..." id="searchInput" oninput="render()">
+    </div>
+  </div>
+</div>
+<div class="status">
+  <span id="statusTxt">در حال دریافت...</span>
+  <span id="updateTxt"></span>
+</div>
+<div class="summary" id="summary" style="display:none">
+  <div class="sum-card">
+    <div class="sum-label">بیت‌کوین</div>
+    <div class="sum-val" id="sBtc">—</div>
+    <div class="up" id="sBtcC" style="font-size:10px">—</div>
+  </div>
+  <div class="sum-card">
+    <div class="sum-label">اتریوم</div>
+    <div class="sum-val" id="sEth">—</div>
+    <div id="sEthC" style="font-size:10px">—</div>
+  </div>
+  <div class="sum-card">
+    <div class="sum-label">S&P 500</div>
+    <div class="sum-val" id="sSp">—</div>
+    <div id="sSpC" style="font-size:10px">—</div>
+  </div>
+</div>
+<div id="content"><div class="loading"><div class="spinner"></div><span>در حال دریافت بازارها...</span></div></div>
+
+<script>
+let allItems = [];
+let currentTab = 'all';
+
+const CRYPTO_META = {
+  bitcoin:{name:'بیت‌کوین',sym:'BTC',e:'₿'},
+  ethereum:{name:'اتریوم',sym:'ETH',e:'Ξ'},
+  tether:{name:'تتر',sym:'USDT',e:'💵'},
+  binancecoin:{name:'بایننس کوین',sym:'BNB',e:'🟡'},
+  solana:{name:'سولانا',sym:'SOL',e:'◎'},
+  ripple:{name:'ریپل',sym:'XRP',e:'💧'},
+  dogecoin:{name:'دوج‌کوین',sym:'DOGE',e:'🐶'},
+  tron:{name:'ترون',sym:'TRX',e:'🔴'},
+  cardano:{name:'کاردانو',sym:'ADA',e:'🔵'},
+  'the-open-network':{name:'تون‌کوین',sym:'TON',e:'💎'},
+  avalanche:{name:'آوالانچ',sym:'AVAX',e:'🔺'},
+  polkadot:{name:'پولکادات',sym:'DOT',e:'🟣'},
+  chainlink:{name:'چین‌لینک',sym:'LINK',e:'🔗'},
+  litecoin:{name:'لایت‌کوین',sym:'LTC',e:'🥈'},
+  'bitcoin-cash':{name:'بیت‌کوین کش',sym:'BCH',e:'💚'},
+  'shiba-inu':{name:'شیبا',sym:'SHIB',e:'🐕'},
+  'matic-network':{name:'پالیگان',sym:'MATIC',e:'🔷'},
+  uniswap:{name:'یونی‌سواپ',sym:'UNI',e:'🦄'},
+  cosmos:{name:'کازموس',sym:'ATOM',e:'⚛️'},
+  'near-protocol':{name:'نیر',sym:'NEAR',e:'🟩'},
+};
+
+const STOCK_META = {
+  AAPL:{name:'اپل',e:'🍎'}, MSFT:{name:'مایکروسافت',e:'🪟'},
+  GOOGL:{name:'گوگل',e:'🔍'}, AMZN:{name:'آمازون',e:'📦'},
+  NVDA:{name:'انویدیا',e:'🟢'}, META:{name:'متا',e:'📘'},
+  TSLA:{name:'تسلا',e:'⚡'}, JPM:{name:'جی‌پی‌مورگان',e:'🏦'},
+  V:{name:'ویزا',e:'💳'}, WMT:{name:'والمارت',e:'🛒'},
+  JNJ:{name:'جانسون',e:'💊'}, XOM:{name:'اکسون',e:'🛢️'},
+  BRKB:{name:'برکشایر',e:'💰'}, PG:{name:'پروکتر گمبل',e:'🧴'},
+  KO:{name:'کوکاکولا',e:'🥤'}, DIS:{name:'دیزنی',e:'🏰'},
+  NFLX:{name:'نتفلیکس',e:'🎬'}, BABA:{name:'علی‌بابا',e:'🛍️'},
+  TSM:{name:'TSMC',e:'💾'}, ORCL:{name:'اوراکل',e:'🔶'},
+};
+
+const INDEX_META = {
+  '^GSPC':{name:'S&P 500',e:'🇺🇸'}, '^DJI':{name:'داو جونز',e:'🏛️'},
+  '^IXIC':{name:'نزدک',e:'💻'}, '^FTSE':{name:'FTSE 100',e:'🇬🇧'},
+  '^N225':{name:'نیکی 225',e:'🇯🇵'}, '^DAX':{name:'داکس',e:'🇩🇪'},
+  '^HSI':{name:'هانگ سنگ',e:'🇭🇰'}, '^STOXX50E':{name:'یورو استوکس',e:'🇪🇺'},
+};
+
+async function fetchCrypto() {
+  const ids = Object.keys(CRYPTO_META).join(',');
+  const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${ids}&order=market_cap_desc&per_page=20&page=1&sparkline=false&price_change_percentage=24h`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('crypto failed');
+  const data = await res.json();
+  return data.map((c, i) => {
+    const m = CRYPTO_META[c.id] || {};
+    return {
+      id: c.id, type:'crypto',
+      symbol: m.sym || c.symbol.toUpperCase(),
+      name: m.name || c.name,
+      emoji: m.e || '🪙',
+      price: c.current_price || 0,
+      change: c.price_change_percentage_24h || 0,
+      vol: c.total_volume || 0,
+      cap: c.market_cap || 0,
+      high: c.high_24h || 0,
+      low: c.low_24h || 0,
+      rank: c.market_cap_rank || i+1,
+    };
+  });
+}
+
+async function fetchStocks() {
+  // Use Twelve Data free API (no CORS)
+  const syms = Object.keys(STOCK_META).join(',');
+  const url = `https://api.twelvedata.com/quote?symbol=${syms}&apikey=demo`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('stocks failed');
+  const data = await res.json();
+
+  const results = [];
+  // If single result, wrap in object
+  const items = data.symbol ? {[data.symbol]: data} : data;
+
+  Object.entries(items).forEach(([sym, q]) => {
+    if (q.status === 'error' || !q.close) return;
+    const m = STOCK_META[sym] || {};
+    const price = parseFloat(q.close) || 0;
+    const open = parseFloat(q.open) || price;
+    const change = open ? ((price - open) / open * 100) : 0;
+    results.push({
+      id: sym, type:'stock',
+      symbol: sym,
+      name: m.name || q.name || sym,
+      emoji: m.e || '📈',
+      price, change,
+      vol: parseInt(q.volume) || 0,
+      high: parseFloat(q.high) || 0,
+      low: parseFloat(q.low) || 0,
+      rank: 0,
+    });
+  });
+  return results;
+}
+
+async function fetchStocksBinance() {
+  // Fallback: use Binance for crypto-adjacent stocks via FMP free
+  // Use a reliable free source: freeapi that has no CORS
+  const syms = ['AAPL','MSFT','GOOGL','AMZN','NVDA','META','TSLA','JPM','V','WMT','JNJ','XOM','KO','NFLX','DIS'];
+  const promises = syms.slice(0,8).map(async sym => {
+    try {
+      const url = `https://api.twelvedata.com/price?symbol=${sym}&apikey=demo`;
+      const res = await fetch(url);
+      const d = await res.json();
+      const m = STOCK_META[sym] || {};
+      if (!d.price) return null;
+      return {
+        id: sym, type:'stock',
+        symbol: sym, name: m.name || sym,
+        emoji: m.e || '📈',
+        price: parseFloat(d.price), change: 0,
+        vol: 0, high: 0, low: 0, rank: 0,
+      };
+    } catch { return null; }
+  });
+  const res = await Promise.all(promises);
+  return res.filter(Boolean);
+}
+
+async function fetchIndices() {
+  const syms = Object.keys(INDEX_META);
+  const results = [];
+  // Try Yahoo Finance via a reliable public CORS proxy
+  try {
+    const url = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${syms.join(',')}&fields=regularMarketPrice,regularMarketChangePercent,regularMarketVolume`;
+    const proxy = `https://corsproxy.io/?${encodeURIComponent(url)}`;
+    const res = await fetch(proxy, {headers:{'x-requested-with':'XMLHttpRequest'}});
+    if (!res.ok) throw new Error();
+    const json = await res.json();
+    const quotes = json?.quoteResponse?.result || [];
+    quotes.forEach(q => {
+      const m = INDEX_META[q.symbol] || {};
+      results.push({
+        id: q.symbol, type:'index',
+        symbol: m.name || q.symbol,
+        name: m.name || q.shortName || q.symbol,
+        emoji: m.e || '📊',
+        price: q.regularMarketPrice || 0,
+        change: q.regularMarketChangePercent || 0,
+        vol: q.regularMarketVolume || 0,
+        high: 0, low: 0, rank: 0,
+      });
+    });
+  } catch(e) {
+    console.log('indices failed:', e);
+  }
+  return results;
+}
+
+async function loadAll() {
+  const btn = document.getElementById('refreshBtn');
+  btn.classList.add('spinning');
+  document.getElementById('statusTxt').innerHTML = '<span class="live-dot"></span> در حال دریافت...';
+  document.getElementById('content').innerHTML = '<div class="loading"><div class="spinner"></div><span>در حال دریافت بازارها...</span></div>';
+
+  const [cryptoR, stocksR, indicesR] = await Promise.allSettled([
+    fetchCrypto(),
+    fetchStocks().catch(() => fetchStocksBinance()),
+    fetchIndices(),
+  ]);
+
+  allItems = [];
+  const errors = [];
+
+  if (cryptoR.status === 'fulfilled') allItems.push(...cryptoR.value);
+  else errors.push('کریپتو');
+
+  if (stocksR.status === 'fulfilled') allItems.push(...stocksR.value);
+  else errors.push('سهام');
+
+  if (indicesR.status === 'fulfilled') allItems.push(...indicesR.value);
+  else errors.push('شاخص‌ها');
+
+  if (!allItems.length) {
+    document.getElementById('content').innerHTML = `<div class="err-box">❌ خطا در دریافت<br><small>اینترنت رو چک کن</small><br><button class="retry" onclick="loadAll()">دوباره</button></div>`;
+    btn.classList.remove('spinning'); return;
+  }
+
+  updateSummary();
+  render();
+
+  const now = new Date();
+  document.getElementById('updateTxt').textContent = now.toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const errTxt = errors.length ? ` (${errors.join('، ')} لود نشد)` : '';
+  document.getElementById('statusTxt').innerHTML = `<span class="live-dot"></span> ${allItems.length} مورد${errTxt}`;
+  document.getElementById('summary').style.display = 'grid';
+  btn.classList.remove('spinning');
+}
+
+function updateSummary() {
+  const btc = allItems.find(x => x.id==='bitcoin');
+  const eth = allItems.find(x => x.id==='ethereum');
+  const sp  = allItems.find(x => x.id==='^GSPC');
+
+  const setCard = (valId, chId, item) => {
+    if (!item) return;
+    document.getElementById(valId).textContent = fmtPrice(item.price, item.type);
+    const c = item.change;
+    document.getElementById(chId).innerHTML = `<span class="${c>=0?'up':'down'}">${c>=0?'▲':'▼'} ${Math.abs(c).toFixed(2)}%</span>`;
+  };
+  setCard('sBtc','sBtcC',btc);
+  setCard('sEth','sEthC',eth);
+  setCard('sSp','sSpC',sp);
+}
+
+function setTab(tab, el) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  render();
+}
+
+function render() {
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  let items = allItems;
+  if (currentTab !== 'all') items = items.filter(x => x.type === currentTab);
+  if (q) items = items.filter(x => x.symbol.toLowerCase().includes(q) || x.name.includes(q));
+  if (!items.length) { document.getElementById('content').innerHTML = '<div class="empty">موردی یافت نشد 🔍</div>'; return; }
+
+  let html = '';
+  if (currentTab === 'all') {
+    [['crypto','کریپتو'],['stock','سهام جهانی'],['index','شاخص‌های بورس']].forEach(([key,label]) => {
+      const g = items.filter(x => x.type===key);
+      if (!g.length) return;
+      html += `<div class="section-head">${label} (${g.length})</div>`;
+      html += g.map((item,i) => cardHTML(item,i)).join('');
+    });
+  } else {
+    html = items.map((item,i) => cardHTML(item,i)).join('');
+  }
+  document.getElementById('content').innerHTML = `<div class="list">${html}</div>`;
+}
+
+function cardHTML(item, i) {
+  const c = item.change;
+  const cls = c>0?'up':c<0?'down':'neu';
+  const arrow = c>0?'▲':c<0?'▼':'●';
+  const typeLabel = item.type==='crypto'?'کریپتو':item.type==='stock'?'سهام':'شاخص';
+  const volStr = item.vol>0 ? `حجم: ${fmtBig(item.vol)}` : '';
+  const capStr = item.cap>0 ? ` | مارکت‌کپ: ${fmtBig(item.cap)}` : '';
+
+  return `<div class="card" style="animation-delay:${i*0.025}s">
+    <div class="coin-logo">
+      ${item.emoji}
+      ${item.type==='crypto'?`<div class="rank-badge">#${item.rank}</div>`:''}
+    </div>
+    <div class="coin-main">
+      <div class="coin-row1">
+        <span class="coin-sym">${item.symbol}</span>
+        <span class="type-badge ${item.type}">${typeLabel}</span>
+      </div>
+      <div class="coin-name">${item.name}</div>
+      ${volStr?`<div class="coin-vol">${volStr}${capStr}</div>`:''}
+    </div>
+    <div class="coin-right">
+      <div class="coin-price">${fmtPrice(item.price,item.type)}</div>
+      <div class="change-pill ${cls}">${arrow} ${Math.abs(c).toFixed(2)}%</div>
+    </div>
+  </div>`;
+}
+
+function fmtPrice(val, type) {
+  if (!val) return '—';
+  if (val>=10000) return '$'+val.toLocaleString('en',{maximumFractionDigits:0});
+  if (val>=1) return '$'+val.toLocaleString('en',{maximumFractionDigits:2});
+  return '$'+val.toLocaleString('en',{maximumSignificantDigits:4});
+}
+function fmtBig(val) {
+  if (!val) return '—';
+  if (val>=1e12) return '$'+(val/1e12).toFixed(2)+'T';
+  if (val>=1e9)  return '$'+(val/1e9).toFixed(2)+'B';
+  if (val>=1e6)  return '$'+(val/1e6).toFixed(2)+'M';
+  return '$'+val.toLocaleString('en',{maximumFractionDigits:0});
+}
+
+setInterval(loadAll, 60000);
+loadAll();
+</script>
+</body>
+</html>
